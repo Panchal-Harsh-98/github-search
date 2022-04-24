@@ -1,10 +1,11 @@
 import React from 'react';
 import { FaHome } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import UserResults from '../components/users/UserResults';
 function Home() {
   return (
     <div className=''>
-      <h1>{process.env.REACT_APP_GIT_URL}</h1>
+      <UserResults />
     </div>
   );
 }
