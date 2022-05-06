@@ -14,26 +14,51 @@ export const GithubProvider = ({ children }) => {
 
   const [state, dispatch] = useReducer(githubReducer, initState);
 
-  const fetchUsers = async () => {
+  /**
+   * this method when invoked calls the search user api with the suggested text
+   *
+   * @param {*} text pass the name of the user to be searched
+   */
+  const searchUsers = async (text) => {
     setLoading();
-    const response = await fetch(`${process.env.REACT_APP_GIT_URL}/users`, {
-      headers: {
-        Authorization: `token ${process.env.REACT_APP_GIT_TOKEN}`,
-      },
+
+    const params = new URLSearchParams({
+      q: text,
     });
+    const response = await fetch(
+      `${process.env.REACT_APP_GIT_URL}/search/users?${params}`,
+      {
+        headers: {
+          Authorization: `token ${process.env.REACT_APP_GIT_TOKEN}`,
+        },
+      }
+    );
     const data = await response.json();
+    console.log('search user response', data);
     dispatch({
       type: 'GET_USER',
-      payload: data,
+      payload: data.items,
     });
   };
 
+  // SETS THE LOADING ANIMATION TO BE VISIBLE
   const setLoading = () => {
     dispatch({ type: 'SET_LOADING' });
   };
+
+  // CLEAR THE USERS THAT ARE SEARCHED AND VISIBLE ON THE PAGE
+  const clearUsers = () => {
+    dispatch({ type: 'CLEAR_USERS' });
+  };
+
   return (
     <GithubContext.Provider
-      value={{ user: state.user, loading: state.loading, fetchUsers }}
+      value={{
+        user: state.user,
+        loading: state.loading,
+        searchUsers,
+        clearUsers,
+      }}
     >
       {children}
     </GithubContext.Provider>
